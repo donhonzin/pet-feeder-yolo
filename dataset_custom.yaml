@@ -1,0 +1,6 @@
+train: C:\Users\mckel\Downloads\HonzaEnv\yolo\yolo\train
+val: C:\Users\mckel\Downloads\HonzaEnv\yolo\yolo\val
+
+nc: 14
+
+names: ["Abyssinian","Bengal","Birman","Bombay","Egyptian Mau","Itchy","Maine Coon","Nuke","Persian","Ragdoll","Russian Blue","Siamese","Sphynx","Unknown cat"]
