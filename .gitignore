@@ -187,6 +187,13 @@ __pycache__/
 # YOLO outputs
 runs/
 
+# Images / photos
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.webp
+
 # Videos
 *.mp4
 *.avi
@@ -194,3 +201,7 @@ runs/
 # Model weights
 *.pt
 *.onnx
+
+# Text files
+*.txt
+
