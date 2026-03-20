@@ -1,0 +1,21 @@
+{
+  "categories": [
+    {
+      "id": 0,
+      "name": "Itchy"
+    },
+    {
+      "id": 1,
+      "name": "Lily"
+    },
+    {
+      "id": 2,
+      "name": "Nuke"
+    }
+  ],
+  "info": {
+    "year": 2026,
+    "version": "1.0",
+    "contributor": "Label Studio"
+  }
+}
