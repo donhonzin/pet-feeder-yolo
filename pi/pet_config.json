@@ -1,0 +1,17 @@
+{
+    "Itchy": {
+        "dispense_seconds": 1.0,
+        "cooldown_seconds": 900,
+        "confidence_threshold": 0.6
+    },
+    "Lily": {
+        "dispense_seconds": 3.0,
+        "cooldown_seconds": 1800,
+        "confidence_threshold": 0.6
+    },
+    "Nuke": {
+        "dispense_seconds": 1.0,
+        "cooldown_seconds": 7200,
+        "confidence_threshold": 0.7
+    }
+}

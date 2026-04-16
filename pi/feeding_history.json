@@ -1,0 +1,350 @@
+[
+    {
+        "time": "2026-03-28 11:16:54",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 12:15:26",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 12:27:06",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 12:41:18",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 12:41:27",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 12:41:41",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 13:17:01",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 13:17:56",
+        "pet_id": "Nuke",
+        "portion": "0.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 13:19:17",
+        "pet_id": "Lily",
+        "portion": "3.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 13:21:32",
+        "pet_id": "Itchy",
+        "portion": "0.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 13:26:20",
+        "pet_id": "Itchy",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 13:26:40",
+        "pet_id": "Nuke",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 13:27:44",
+        "pet_id": "Lily",
+        "portion": "3.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 13:43:35",
+        "pet_id": "Lily",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 13:43:43",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 13:43:49",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 13:44:27",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 13:44:43",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 13:45:27",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 13:46:19",
+        "pet_id": "Lily",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 13:49:37",
+        "pet_id": "Nuke",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 14:11:40",
+        "pet_id": "Lily",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 14:16:10",
+        "pet_id": "Lily",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 14:16:20",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 14:16:23",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 14:22:44",
+        "pet_id": "Itchy",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 14:23:28",
+        "pet_id": "Nuke",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 14:24:36",
+        "pet_id": "Lily",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 14:35:48",
+        "pet_id": "Nuke",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 14:36:24",
+        "pet_id": "Lily",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 14:45:09",
+        "pet_id": "Nuke",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 14:51:44",
+        "pet_id": "Lily",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 14:54:27",
+        "pet_id": "Itchy",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 15:11:07",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 16:30:01",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-03-28 16:33:04",
+        "pet_id": "Itchy",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 16:33:17",
+        "pet_id": "Lily",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 16:33:29",
+        "pet_id": "Nuke",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-03-28 17:00:53",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-04-01 16:58:02",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-04-01 16:59:25",
+        "pet_id": "Itchy",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-04-01 17:00:11",
+        "pet_id": "Nuke",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-04-01 17:01:11",
+        "pet_id": "Lily",
+        "portion": "4.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-04-03 15:04:16",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-04-03 15:06:58",
+        "pet_id": "Nuke",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-04-03 15:07:24",
+        "pet_id": "Itchy",
+        "portion": "2.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-04-03 15:26:09",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-04-03 15:30:48",
+        "pet_id": "Itchy",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-04-03 15:35:25",
+        "pet_id": "Itchy",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-04-03 15:42:51",
+        "pet_id": "Nuke",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-04-03 15:43:12",
+        "pet_id": "Lily",
+        "portion": "3.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-04-03 15:59:16",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-04-03 15:59:40",
+        "pet_id": "Nuke",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-04-03 16:18:46",
+        "pet_id": "Itchy",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-04-15 19:15:30",
+        "pet_id": "Manual",
+        "portion": "2.0s",
+        "method": "manual"
+    },
+    {
+        "time": "2026-04-15 19:16:48",
+        "pet_id": "Lily",
+        "portion": "3.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-04-15 19:17:08",
+        "pet_id": "Nuke",
+        "portion": "1.0s",
+        "method": "auto"
+    },
+    {
+        "time": "2026-04-15 19:17:45",
+        "pet_id": "Itchy",
+        "portion": "1.0s",
+        "method": "auto"
+    }
+]
