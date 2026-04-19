@@ -56,6 +56,7 @@ class FeederCore:
         self.feed_lock = threading.Lock()
         self.history_lock = threading.Lock()
         self.state_lock = threading.Lock()
+        self.detection_lock = threading.Lock()
 
         self.pet_config = {}
         self.config_last_modified = 0
@@ -63,6 +64,7 @@ class FeederCore:
 
         self.latest_jpeg = None
         self.latest_detect_frame = None
+        self.latest_detections = []
 
         self.latest_status = "Starting..."
         self.latest_detection = "No detection yet"
@@ -76,9 +78,9 @@ class FeederCore:
 
         self.history_cache = deque(maxlen=100)
 
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.servo_pin, GPIO.OUT)
-        GPIO.output(self.servo_pin, GPIO.LOW)
+        GPIO.setup(self.servo_pin, GPIO.OUT, initial=GPIO.LOW)
 
     # =====================================================
     # FILE / CONFIG / HISTORY
@@ -264,6 +266,70 @@ class FeederCore:
 
         return self.class_names[best_class_id], best_conf
 
+    def get_rotated_dimensions(self, width, height):
+        if self.rotate_frame:
+            return height, width
+        return width, height
+
+    def scale_detection_box(self, x1, y1, x2, y2):
+        detect_w, detect_h = self.get_rotated_dimensions(
+            self.detect_width, self.detect_height
+        )
+        live_w, live_h = self.get_rotated_dimensions(
+            self.live_width, self.live_height
+        )
+
+        scale_x = live_w / float(detect_w)
+        scale_y = live_h / float(detect_h)
+
+        return (
+            int(x1 * scale_x),
+            int(y1 * scale_y),
+            int(x2 * scale_x),
+            int(y2 * scale_y),
+        )
+
+    def extract_detections_for_dashboard(self, results):
+        boxes = results[0].boxes
+
+        if boxes is None or len(boxes) == 0:
+            return []
+
+        xyxy_list = boxes.xyxy.tolist()
+        confs = boxes.conf.tolist()
+        class_ids = boxes.cls.tolist()
+
+        best_per_class = {}
+
+        for xyxy, conf, class_id in zip(xyxy_list, confs, class_ids):
+            if float(conf) < 0.6:
+                continue
+
+            label = self.class_names[int(class_id)]
+
+            if label not in best_per_class or float(conf) > best_per_class[label]["confidence"]:
+                x1, y1, x2, y2 = xyxy
+                x1, y1, x2, y2 = self.scale_detection_box(x1, y1, x2, y2)
+
+                best_per_class[label] = {
+                    "x1": int(x1),
+                    "y1": int(y1),
+                    "x2": int(x2),
+                    "y2": int(y2),
+                    "label": label,
+                    "confidence": float(conf),
+                }
+
+        return list(best_per_class.values())
+
+    def get_latest_detections(self):
+        with self.detection_lock:
+            return [dict(d) for d in self.latest_detections]
+
+    def set_latest_detections(self, detections):
+        with self.detection_lock:
+            self.latest_detections = [dict(d) for d in detections]
+
     # =====================================================
     # CAMERA / WORKERS
     # =====================================================
@@ -281,10 +347,8 @@ class FeederCore:
             try:
                 (main_frame, lores_frame), _ = self.picam2.capture_arrays(["main", "lores"])
 
-                # main stream is RGB888
                 main_frame = self._rotate_if_needed(main_frame)
 
-                # lores stream is YUV420, convert once for YOLO
                 detect_bgr = cv2.cvtColor(lores_frame, cv2.COLOR_YUV2BGR_I420)
                 detect_bgr = self._rotate_if_needed(detect_bgr)
 
@@ -293,7 +357,6 @@ class FeederCore:
                 with self.frame_lock:
                     self.latest_detect_frame = detect_bgr
 
-                # Only JPEG-encode often enough for a smooth preview, not max speed
                 if now - last_jpeg_time >= min_frame_time:
                     ok, jpeg = cv2.imencode(
                         ".jpg",
@@ -328,10 +391,11 @@ class FeederCore:
                     time.sleep(0.05)
                     continue
 
-                # YOLO predict mode is the standard inference path in Ultralytics. :contentReference[oaicite:1]{index=1}
                 results = self.model.predict(frame, verbose=False)
-                pet_name, confidence = self.get_best_detection(results)
+                dashboard_detections = self.extract_detections_for_dashboard(results)
+                self.set_latest_detections(dashboard_detections)
 
+                pet_name, confidence = self.get_best_detection(results)
                 detect_time = time.time()
 
                 if pet_name is not None:
@@ -373,12 +437,14 @@ class FeederCore:
                                 ),
                             )
                 else:
+                    self.set_latest_detections([])
                     self.set_status(status="Idle", detection="No valid detection")
 
                 last_detect_time = detect_time
 
             except Exception as e:
                 print("detection_worker error:", e)
+                self.set_latest_detections([])
                 self.set_status(status=f"Error: {e}")
                 time.sleep(0.5)
 
@@ -392,7 +458,6 @@ class FeederCore:
 
         self.picam2 = Picamera2()
 
-        # Picamera2 supports main + lores streams in one configuration. :contentReference[oaicite:2]{index=2}
         config = self.picam2.create_video_configuration(
             main={"size": (self.live_width, self.live_height), "format": "RGB888"},
             lores={"size": (self.detect_width, self.detect_height), "format": "YUV420"},
@@ -414,14 +479,22 @@ class FeederCore:
 
     def stop(self):
         self.shutdown_flag = True
+
         try:
             if self.picam2 is not None:
                 self.picam2.stop()
         except Exception:
             pass
 
-        GPIO.output(self.servo_pin, GPIO.LOW)
-        GPIO.cleanup()
+        try:
+            GPIO.output(self.servo_pin, GPIO.LOW)
+        except Exception:
+            pass
+
+        try:
+            GPIO.cleanup()
+        except Exception:
+            pass
 
     def get_latest_jpeg(self):
         with self.frame_lock:

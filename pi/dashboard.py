@@ -4,6 +4,9 @@ import threading
 import json
 from functools import wraps
 
+import cv2
+import numpy as np
+
 from flask import (
     Flask,
     Response,
@@ -72,6 +75,175 @@ def login_required(func):
             return redirect(url_for("login", next=request.path))
         return func(*args, **kwargs)
     return wrapper
+
+
+def get_color_for_label(label):
+    label_key = str(label).lower().strip()
+
+    palette = {
+        "itchy": (0, 255, 255),   # yellow
+        "nuke": (255, 0, 0),      # blue
+        "lily": (0, 0, 255),      # red
+    }
+
+    if label_key in palette:
+        return palette[label_key]
+
+    seed = sum(ord(c) for c in label_key)
+    return (
+        50 + (seed * 53) % 206,
+        50 + (seed * 97) % 206,
+        50 + (seed * 193) % 206,
+    )
+
+
+def get_latest_detections():
+    """
+    Tries to obtain live detections from FeederCore.
+    Supported formats:
+      - core.get_latest_detections() -> list[dict]
+      - core.latest_detections -> list[dict]
+
+    Expected dict keys (flexible):
+      x1, y1, x2, y2
+      OR bbox = [x1, y1, x2, y2]
+      label / pet_id / class_name / name
+      confidence / conf / score
+    """
+    try:
+        if hasattr(core, "get_latest_detections") and callable(core.get_latest_detections):
+            detections = core.get_latest_detections()
+            if isinstance(detections, list):
+                return detections
+    except Exception:
+        pass
+
+    try:
+        detections = getattr(core, "latest_detections", None)
+        if isinstance(detections, list):
+            return detections
+    except Exception:
+        pass
+
+    return []
+
+
+def normalize_detection(det):
+    if not isinstance(det, dict):
+        return None
+
+    if "bbox" in det and isinstance(det["bbox"], (list, tuple)) and len(det["bbox"]) == 4:
+        x1, y1, x2, y2 = det["bbox"]
+    else:
+        required = ["x1", "y1", "x2", "y2"]
+        if not all(k in det for k in required):
+            return None
+        x1, y1, x2, y2 = det["x1"], det["y1"], det["x2"], det["y2"]
+
+    label = (
+        det.get("label")
+        or det.get("pet_id")
+        or det.get("class_name")
+        or det.get("name")
+        or "Pet"
+    )
+
+    confidence = det.get("confidence", det.get("conf", det.get("score", 0.0)))
+
+    try:
+        x1 = int(float(x1))
+        y1 = int(float(y1))
+        x2 = int(float(x2))
+        y2 = int(float(y2))
+        confidence = float(confidence)
+    except Exception:
+        return None
+
+    return {
+        "x1": x1,
+        "y1": y1,
+        "x2": x2,
+        "y2": y2,
+        "label": str(label),
+        "confidence": confidence,
+    }
+
+
+def draw_detection_overlays(frame):
+    detections = get_latest_detections()
+    if not detections:
+        return frame
+
+    h, w = frame.shape[:2]
+
+    for raw_det in detections:
+        det = normalize_detection(raw_det)
+        if not det:
+            continue
+
+        x1 = max(0, min(w - 1, det["x1"]))
+        y1 = max(0, min(h - 1, det["y1"]))
+        x2 = max(0, min(w - 1, det["x2"]))
+        y2 = max(0, min(h - 1, det["y2"]))
+
+        if x2 <= x1 or y2 <= y1:
+            continue
+
+        label = det["label"]
+        confidence = det["confidence"]
+        color = get_color_for_label(label)
+
+        text = f"{label} {confidence * 100:.1f}%"
+
+        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+
+        (text_w, text_h), baseline = cv2.getTextSize(
+            text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2
+        )
+
+        text_bg_y1 = max(0, y1 - text_h - baseline - 10)
+        text_bg_y2 = max(text_h + baseline + 8, y1)
+
+        cv2.rectangle(
+            frame,
+            (x1, text_bg_y1),
+            (min(w - 1, x1 + text_w + 12), text_bg_y2),
+            color,
+            -1,
+        )
+
+        cv2.putText(
+            frame,
+            text,
+            (x1 + 6, text_bg_y2 - 6),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (0, 0, 0),
+            2,
+            cv2.LINE_AA,
+        )
+
+    return frame
+
+
+def annotate_jpeg_frame(frame_bytes):
+    np_frame = np.frombuffer(frame_bytes, dtype=np.uint8)
+    frame = cv2.imdecode(np_frame, cv2.IMREAD_COLOR)
+
+    if frame is None:
+        return frame_bytes
+
+    frame = draw_detection_overlays(frame)
+
+    success, encoded = cv2.imencode(
+        ".jpg",
+        frame,
+        [int(cv2.IMWRITE_JPEG_QUALITY), int(core.jpeg_quality)],
+    )
+    if not success:
+        return frame_bytes
+
+    return encoded.tobytes()
 
 
 LOGIN_HTML = """
@@ -820,18 +992,19 @@ def video_feed():
                 time.sleep(0.02)
                 continue
 
-            # Skip duplicate frames (prevents buffering lag)
-            if frame == last_frame:
+            annotated_frame = annotate_jpeg_frame(frame)
+
+            if annotated_frame == last_frame:
                 time.sleep(0.01)
                 continue
 
-            last_frame = frame
+            last_frame = annotated_frame
 
             yield (
                 b"--frame\r\n"
                 b"Content-Type: image/jpeg\r\n"
                 b"Cache-Control: no-store, no-cache, must-revalidate, max-age=0\r\n"
-                b"Pragma: no-cache\r\n\r\n" + frame + b"\r\n"
+                b"Pragma: no-cache\r\n\r\n" + annotated_frame + b"\r\n"
             )
 
     response = Response(
@@ -839,7 +1012,6 @@ def video_feed():
         mimetype="multipart/x-mixed-replace; boundary=frame",
     )
 
-    # Prevent buffering (VERY important for Cloudflare)
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
